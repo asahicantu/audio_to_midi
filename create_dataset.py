@@ -9,12 +9,12 @@ import pickle
 import random
 random.seed(21)
 import ntpath
-
+import os
 # data types
 AudioDecoded = namedtuple('AudioDecoded', ['time_series', 'sr'])
 
 def find_audio_files(directory_str):
-    directory_str_audio = directory_str + "audio"
+    directory_str_audio = os.path.join(directory_str , "audio")
     audio_files = librosa.util.find_files(directory_str_audio, recurse=False, case_sensitive=True) #recurse False
     # means subfolders are not searched; case_sensitive True ultimately keeps songs from being
     # listed twice
@@ -71,7 +71,7 @@ def load_segment_of_audio_and_save(audio_file, start, audio_segment_length, midi
     else:
         audio_segment_time_series, sr = librosa.core.load(audio_file, offset=start,
                                                           duration=audio_segment_length, sr=sr)
-    filename_format = "C:/Users/Lilly/audio_and_midi/segments/audio/{0}_start_time_{1}.wav"
+    filename_format = "Data/out/wav/{0}_start_time_{1}.wav"
     filename = filename_format.format(ntpath.basename(audio_file)[:-4], str(start))
 
     # for testing by listening to audio (currently written for windows)
@@ -80,9 +80,9 @@ def load_segment_of_audio_and_save(audio_file, start, audio_segment_length, midi
     return audio_segment_time_series
 
 def load_midi(directory_str, audio_file):
-    midi_base_str = directory_str + "midi/"
-    midi_str = midi_base_str + ntpath.basename(audio_file)[:-4] + ".mid"
-    midi_file = MidiFile(midi_str)
+    midi_str = ntpath.basename(audio_file)[:-4] + ".mid"
+    midi_file_path = os.path.join(directory_str,"midi",midi_str)
+    midi_file = MidiFile(midi_file_path)
     return midi_file
 
 def create_simplified_midi(midi_file):
@@ -292,6 +292,7 @@ def done_beep():
 
 def preprocess_audio_and_midi(directory_str):
     audio_files = find_audio_files(directory_str)
+    print(f'processing audio and midi... found {len(audio_files)}')
     cqt_segments = []
     all_songs_encoded_midi_segments = []
     midi_segments_count = 0
@@ -371,7 +372,7 @@ def main():
     # (containing the
     # audio files) and one named "midi" (containing the MIDI files). For example, "C:/Users/Lilly/audio_and_midi/" or
     # "/home/lilly/Downloads/audio_midi/"
-    directory_str = "/home/lilly/Downloads/audio_midi/"
+    directory_str = "audio_midi/"
     preprocess_audio_and_midi(directory_str)
 
 if __name__ == '__main__':

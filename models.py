@@ -15,6 +15,7 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import time
 
+
 # env var to set GPU options
 # (this was necessary for my machine. comment out line below if it throws an error.)
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
@@ -36,10 +37,10 @@ def pickle_if_not_pickled():
     except (OSError, IOError) as err:
         # Windows
         if os.name == 'nt':
-            directory_str = "C:/Users/Lilly/audio_and_midi/"
+            directory_str = os.path.join( os.getcwd(), 'audio_midi') 
         # Linux
         if os.name == 'posix':
-            directory_str = "/home/lilly/Downloads/audio_midi/"
+            directory_str = os.path.join( os.getcwd(), 'audio_midi') 
         preprocess_audio_and_midi(directory_str)
         cqt_segments, midi_segments = pickle_if_not_pickled()
     return cqt_segments, midi_segments
@@ -189,7 +190,7 @@ def create_model(input_height, input_width, one_d_array_len):
     model.add(Flatten())
     model.add(Dense(one_d_array_len, activation='sigmoid'))
     model.summary()
-    adam = optimizers.adam(lr=0.0001, decay=.00001)
+    adam = tf.keras.optimizers.Adam(lr=0.0001, decay=.00001)
     model.compile(loss=root_mse,
                   optimizer=adam,
                   metrics=[root_mse, 'mae', r2_coeff_determination])

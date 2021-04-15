@@ -1,0 +1,5 @@
+audio_midi
+__pycache__
+model_checkpoints
+cqt_segments_midi_segments.pkl
+tensorboard_logs
